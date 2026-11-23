@@ -1,0 +1,31 @@
+name: Build iPad app
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build (iOS Simulator)
+    runs-on: macos-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Xcode version
+        run: xcodebuild -version
+
+      - name: List schemes
+        working-directory: Gameseeker.swiftpm
+        run: xcodebuild -list
+
+      - name: Build
+        working-directory: Gameseeker.swiftpm
+        run: |
+          set -o pipefail
+          xcodebuild build \
+            -scheme Gameseeker \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath "$RUNNER_TEMP/DerivedData" \
+            CODE_SIGNING_ALLOWED=NO
